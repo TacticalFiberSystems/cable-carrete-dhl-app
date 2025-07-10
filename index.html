@@ -10,52 +10,47 @@
   <div class="container">
     <h1>Calculadora de Carrete y Envío DHL</h1>
 
+    <!-- Modo 1 -->
     <div class="form-group">
       <label for="diameter">Diámetro del cable (mm):</label>
       <select id="diameter"></select>
     </div>
-
     <div class="form-group">
       <label for="length">Longitud del cable (m):</label>
       <input type="number" id="length" min="1" placeholder="Ej. 100">
     </div>
-
     <div class="form-group">
       <label for="country">País destino:</label>
       <select id="country"></select>
     </div>
-
     <div class="form-group extras">
       <label><input type="checkbox" id="urgent"> Envío urgente (+15%)</label>
       <label><input type="checkbox" id="insured"> Seguro (+5%)</label>
     </div>
-
     <button id="calcBtn">Calcular</button>
-
     <div id="result"></div>
+
+    <hr>
+
+    <!-- Modo 2 -->
+    <h2>¿Cuántos metros caben en un carrete?</h2>
+    <div class="form-group">
+      <label for="mode2-diameter">Tipo de cable (diámetro):</label>
+      <select id="mode2-diameter"></select>
+    </div>
+    <div class="form-group">
+      <label for="mode2-reel">Modelo de carrete:</label>
+      <select id="mode2-reel">
+        <option value="310">310</option>
+        <option value="380">380</option>
+        <option value="385">385</option>
+        <option value="485">485</option>
+        <option value="4823">4823</option>
+      </select>
+    </div>
+    <button id="checkCapacityBtn">Consultar capacidad</button>
+    <div id="capacityResult"></div>
   </div>
-<hr>
-<h2>¿Cuántos metros caben en un carrete?</h2>
-
-<div class="form-group">
-  <label for="mode2-diameter">Tipo de cable (diámetro):</label>
-  <select id="mode2-diameter"></select>
-</div>
-
-<div class="form-group">
-  <label for="mode2-reel">Modelo de carrete:</label>
-  <select id="mode2-reel">
-    <option value="310">310</option>
-    <option value="380">380</option>
-    <option value="385">385</option>
-    <option value="485">485</option>
-    <option value="4823">4823</option>
-  </select>
-</div>
-
-<button id="checkCapacityBtn">Consultar capacidad</button>
-
-<div id="capacityResult"></div>
 
   <script src="dhlData.js"></script>
   <script src="app.js"></script>
