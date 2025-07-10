@@ -104,3 +104,18 @@ function getRate(zone, weight) {
   }
   return null;
 }
+document.getElementById('checkCapacityBtn').onclick = () => {
+  const d = parseFloat(document.getElementById('mode2-diameter').value);
+  const reel = document.getElementById('mode2-reel').value;
+  const capList = capacityData[d];
+
+  const reelIndex = reels.indexOf(reel);
+  const cap = capList && reelIndex >= 0 ? capList[reelIndex] : null;
+
+  const resultBox = document.getElementById('capacityResult');
+  if (cap) {
+    resultBox.innerHTML = `<strong>📏 En el carrete ${reel} caben hasta <span style="color:green;">${cap} metros</span> del cable de ${d} mm.</strong>`;
+  } else {
+    resultBox.innerHTML = `<strong style="color:red;">⚠️ No hay datos disponibles para esa combinación.</strong>`;
+  }
+};
