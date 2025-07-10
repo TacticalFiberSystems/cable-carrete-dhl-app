@@ -10,7 +10,10 @@ const capacityData = {
 
 const reels = ['310','380','385','485','4823'];
 const reelWeight = {'310':3.7,'380':5.2,'385':6.5,'485':8.6,'4823':0};
-const weightPerMeter = {4.0:0.0196,4.5:0.0262,5.0:0.0321,5.5:0.0433,6.0:0.0577,8.0:0.089,9.2:0.120};
+const weightPerMeter = {
+  4.0: 0.0196, 4.5: 0.0262, 5.0: 0.0321,
+  5.5: 0.0433, 6.0: 0.0577, 8.0: 0.089, 9.2: 0.120
+};
 
 const cableTypes = {
   "4.0": "2 Fiber",
@@ -26,11 +29,15 @@ window.onload = () => {
   const diameterSel = document.getElementById('diameter');
   const mode2Diameter = document.getElementById('mode2-diameter');
 
-  Object.keys(capacityData).forEach(d => {
-    const label = cableTypes[d] ? `${cableTypes[d]}, ${d} mm` : `${d} mm`;
-    diameterSel.add(new Option(label, d));
-    mode2Diameter.add(new Option(label, d));
-  });
+  Object.keys(capacityData)
+    .map(k => parseFloat(k).toFixed(1))
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .sort((a, b) => parseFloat(a) - parseFloat(b))
+    .forEach(d => {
+      const label = cableTypes[d] ? `${cableTypes[d]}, ${d} mm` : `${d} mm`;
+      diameterSel.add(new Option(label, d));
+      mode2Diameter.add(new Option(label, d));
+    });
 
   const countrySel = document.getElementById('country');
   Object.keys(countryZone).forEach(c => countrySel.add(new Option(c, c)));
@@ -72,6 +79,7 @@ function calculate() {
     resultDiv.innerHTML = '<strong>Zona/peso no cubierto.</strong>';
     return;
   }
+
   let price = rate * (urgent?1.15:1) * (insured?1.05:1);
   resultDiv.innerHTML = `
     <strong>Carrete:</strong> ${reel}<br>
