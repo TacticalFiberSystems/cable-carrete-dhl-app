@@ -1,29 +1,35 @@
 const capacityData = {
-  3.0: [628,1320,2009,3125],
+  4.0: [300, 600, 950, 1400],
   4.5: [226,487,730,1117,1014],
   5.0: [157,344,548,848,1014],
   5.5: [137,272,435,674],
   6.0: [115,220,365,578],
   8.0: [83,150,260,332,384],
-  9.0: [78,140,250,320],
-  10.0: [73,132,230,300],
-  12.0: [65,110,195,265],
-  14.0: [55,95,170,225],
-  17.0: [40,65,120,150],
-  24.0: [30,40,55,70],
-  29.9: [29,40,40,25,30]
+  9.2: [60,120,200,280],
 };
+
 const reels = ['310','380','385','485','4823'];
 const reelWeight = {'310':3.7,'380':5.2,'385':6.5,'485':8.6,'4823':0};
-const weightPerMeter = {3.0:0.0196,4.5:0.0262,5.0:0.0321,5.5:0.0433,6.0:0.0577,8.0:0.089,9.2:0.120};
+const weightPerMeter = {4.0:0.0196,4.5:0.0262,5.0:0.0321,5.5:0.0433,6.0:0.0577,8.0:0.089,9.2:0.120};
+
+const cableTypes = {
+  "4.0": "2 Fiber",
+  "4.5": "4 Fiber",
+  "5.0": "8 Fiber",
+  "5.5": "12 Fiber",
+  "6.0": "12 Fiber MPO / 24 Fiber MPO",
+  "8.0": "Hybrid",
+  "9.2": "SMPTE"
+};
 
 window.onload = () => {
   const diameterSel = document.getElementById('diameter');
   const mode2Diameter = document.getElementById('mode2-diameter');
 
   Object.keys(capacityData).forEach(d => {
-    diameterSel.add(new Option(d + ' mm', d));
-    mode2Diameter.add(new Option(d + ' mm', d)); // se asegura que se llene correctamente
+    const label = cableTypes[d] ? `${cableTypes[d]}, ${d} mm` : `${d} mm`;
+    diameterSel.add(new Option(label, d));
+    mode2Diameter.add(new Option(label, d));
   });
 
   const countrySel = document.getElementById('country');
