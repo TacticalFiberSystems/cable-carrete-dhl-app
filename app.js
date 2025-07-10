@@ -1,4 +1,3 @@
-// Capacidad máxima por diámetro y carrete
 const capacityData = {
   3.0: [628, 1320, 2009, 3125],
   4.5: [226, 487, 730, 1117, 1014],
@@ -14,29 +13,23 @@ const capacityData = {
   24.0: [30, 40, 55, 70],
   29.9: [29, 40, 40, 25, 30]
 };
-
-const reels = ['310', '380', '385', '485', '4823'];
-const reelWeight = { '310': 3.7, '380': 5.2, '385': 6.5, '485': 8.6, '4823': 0 };
-
-// Peso por metro según diámetro (kg)
-const weightPerMeter = {
-  3.0: 0.0196, 4.5: 0.0262, 5.0: 0.0321,
-  5.5: 0.0433, 6.0: 0.0577, 8.0: 0.089,
-  9.2: 0.120
-};
+const reels = ['310','380','385','485','4823'];
+const reelWeight = {'310':3.7,'380':5.2,'385':6.5,'485':8.6,'4823':0};
+const weightPerMeter = {3.0:0.0196,4.5:0.0262,5.0:0.0321,5.5:0.0433,6.0:0.0577,8.0:0.089,9.2:0.120};
 
 window.onload = () => {
   const diameterSel = document.getElementById('diameter');
+  const mode2Diameter = document.getElementById('mode2-diameter');
   Object.keys(capacityData).forEach(d => {
-    diameterSel.add(new Option(d + ' mm', d));
+    diameterSel.add(new Option(d+' mm', d));
+    mode2Diameter.add(new Option(d+' mm', d));
   });
 
   const countrySel = document.getElementById('country');
-  Object.keys(countryZone).forEach(c => {
-    countrySel.add(new Option(c, c));
-  });
+  Object.keys(countryZone).forEach(c => countrySel.add(new Option(c, c)));
 
   document.getElementById('calcBtn').onclick = calculate;
+  document.getElementById('checkCapacityBtn').onclick = calculateCapacity;
 };
 
 function calculate() {
@@ -54,68 +47,58 @@ function calculate() {
   }
 
   const capacities = capacityData[d];
-  const valid = capacities.map((cap, i) => cap >= length ? reels[i] : null).filter(Boolean);
+  const valid = capacities.map((c,i)=>c>=length?reels[i]:null).filter(Boolean);
   if (!valid.length) {
     resultDiv.innerHTML = '<strong>❌ Ningún carrete válido para esa longitud.</strong>';
     return;
   }
 
-  const reel = valid[0]; // elegimos el primer válido
-  const pesoCable = (weightPerMeter[d] || 0) * length;
-  const pesoCarrete = reelWeight[reel] || 0;
+  const reel = valid[0];
+  const pesoCable = (weightPerMeter[d]||0)*length;
+  const pesoCarrete = reelWeight[reel]||0;
   const pesoTotal = pesoCable + pesoCarrete;
   const volumenPeso = calculateVolumetricWeight(reel);
   const billPeso = Math.max(pesoTotal, volumenPeso);
-
   const zone = countryZone[country];
   const rate = getRate(zone, billPeso);
-  if (rate === null) {
+  if (rate===null) {
     resultDiv.innerHTML = '<strong>Zona/peso no cubierto.</strong>';
     return;
   }
-
-  let price = rate;
-  if (urgent) price *= 1.15;
-  if (insured) price *= 1.05;
-  price = price.toFixed(2);
-
+  let price = rate*(urgent?1.15:1)*(insured?1.05:1);
   resultDiv.innerHTML = `
     <strong>Carrete:</strong> ${reel}<br>
     <strong>Peso cable:</strong> ${pesoCable.toFixed(2)} kg<br>
     <strong>Peso carrete:</strong> ${pesoCarrete.toFixed(2)} kg<br>
-    <strong>Peso facturable:</strong> ${billPeso.toFixed(2)} kg<br>
+    <strong>Peso facturable:</strong> ${Math.max(pesoTotal, volumenPeso).toFixed(2)} kg<br>
     <strong>Zona DHL:</strong> ${zone}<br>
-    <strong>Tarifa:</strong> €${price}
+    <strong>Tarifa:</strong> €${price.toFixed(2)}
   `;
 }
 
+function calculateCapacity() {
+  const d = parseFloat(document.getElementById('mode2-diameter').value);
+  const reel = document.getElementById('mode2-reel').value;
+  const capList = capacityData[d];
+  const idx = reels.indexOf(reel);
+  const cap = capList && idx>=0 ? capList[idx] : null;
+  const resultBox = document.getElementById('capacityResult');
+  resultBox.innerHTML = cap
+    ? `<strong>📏 En el carrete ${reel} caben hasta ${cap} metros del cable de ${d} mm.</strong>`
+    : `<strong style="color:red;">⚠️ No hay datos disponibles para esa combinación.</strong>`;
+}
+
 function calculateVolumetricWeight(reel) {
-  const dims = { '310': [37,32,24], '380': [41,31,51], '385': [40,50,34], '485': [56,46,35], '4823': [0,0,0] };
+  const dims = {'310':[37,32,24],'380':[41,31,51],'385':[40,50,34],'485':[56,46,35],'4823':[0,0,0]};
   const [l,w,h] = dims[reel];
-  return ((l*w*h)/5000);
+  return (l*w*h)/5000;
 }
 
 function getRate(zone, weight) {
   const breaks = dhlRates[zone];
-  if (!breaks) return null;
   const thresholds = [0.5,1,2,5,10,20,30,50,70];
-  for (let i=0; i < thresholds.length; i++) {
+  for (let i = 0; i < thresholds.length; i++) {
     if (weight <= thresholds[i]) return breaks[i];
   }
   return null;
 }
-document.getElementById('checkCapacityBtn').onclick = () => {
-  const d = parseFloat(document.getElementById('mode2-diameter').value);
-  const reel = document.getElementById('mode2-reel').value;
-  const capList = capacityData[d];
-
-  const reelIndex = reels.indexOf(reel);
-  const cap = capList && reelIndex >= 0 ? capList[reelIndex] : null;
-
-  const resultBox = document.getElementById('capacityResult');
-  if (cap) {
-    resultBox.innerHTML = `<strong>📏 En el carrete ${reel} caben hasta <span style="color:green;">${cap} metros</span> del cable de ${d} mm.</strong>`;
-  } else {
-    resultBox.innerHTML = `<strong style="color:red;">⚠️ No hay datos disponibles para esa combinación.</strong>`;
-  }
-};
